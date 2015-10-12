@@ -1,0 +1,134 @@
+<extend name="./Apps/Home/View/default/users/layout.html" />
+<block name="content">
+<script>
+$(function () {
+	   $.formValidator.initConfig({
+		   theme:'Default',mode:'AutoTip',formID:"myform",debug:true,submitOnce:true,onSuccess:function(){
+				   editUser();
+			       return false;
+			},onError:function(msg){
+		}});
+	   $("#userName").formValidator({onShow:"",onFocus:"",onCorrect:"输入正确"}).inputValidator({min:6,max:20,onError:"用户昵称长度为6到20位"});
+	   $("#userPhone").inputValidator({min:0,max:25,onError:"你输入的手机号码非法,请确认"}).regexValidator({
+			regExp:"mobile",dataType:"enum",onError:"手机号码格式错误"
+		}).ajaxValidator({
+			dataType : "json",
+			async : true,
+			url : Think.U('Home/Users/checkLoginKey'),
+			success : function(data){
+				var json = WST.toJson(data);
+	            if( json.status == "1" ) {
+	                return true;
+				} else {
+	                return false;
+				}
+				return "该手机号码已被使用";
+			},
+			buttons: $("#dosubmit"),
+			onError : "该手机号码已存在。",
+			onWait : "请稍候..."
+		}).defaultPassed().unFormValidator(true);
+		$("#userEmail").inputValidator({min:0,max:25,onError:"你输入的邮箱长度非法,请确认"}).regexValidator({
+		       regExp:"email",dataType:"enum",onError:"邮箱格式错误"
+			}).ajaxValidator({
+				dataType : "json",
+				async : true,
+				url : Think.U('Home/Users/checkLoginKey'),
+				success : function(data){
+					var json = WST.toJson(data);
+		            if( json.status == "1" ) {
+		                return true;
+					} else {
+		                return false;
+					}
+					return "该电子邮箱已被使用";
+				},
+				buttons: $("#dosubmit"),
+				onError : "该邮箱已存在。",
+				onWait : "请稍候..."
+			}).defaultPassed().unFormValidator(true);
+		$("#userPhone").blur(function(){
+			  if($("#userPhone").val()==''){
+				  $("#userPhone").unFormValidator(true);
+			  }else{
+				  $("#userPhone").unFormValidator(false);
+			  }
+		});
+		$("#userEmail").blur(function(){
+			  if($("#userEmail").val()==''){
+				  $("#userEmail").unFormValidator(true);
+			  }else{
+				  $("#userEmail").unFormValidator(false);
+			  }
+		});
+	   $("#userImgUpload").uploadify({
+		    formData      : {'dir':'users','width':150,'height':150},
+		    buttonText    : '选择图标',
+		    fileTypeDesc  : 'Image Files',
+	        fileTypeExts  : '*.gif; *.jpg; *.png',
+	        swf           : publicurl+'/plugins/uploadify/uploadify.swf',
+	        uploader      : Think.U('Home/Users/uploadPic'),
+	        onUploadSuccess : function(file, data, response) {
+	        	var json = WST.toJson(data);
+	        	$('#preview').attr('src',domainURL +'/'+json.Filedata.savepath+json.Filedata.savethumbname).show();
+	        	$('#userPhoto').val(json.Filedata.savepath+json.Filedata.savename);
+       }
+	    });
+});
+</script>
+	<link rel="stylesheet" href="__PUBLIC__/plugins/uploadify/uploadify.css">
+	<script src="__PUBLIC__/plugins/uploadify/jquery.uploadify.min.js"></script>
+   	<div class="wst-body"> 
+       <div class='wst-page-header'>买家中心 > 个人资料</div>
+       <div class='wst-page-content'>
+       <form name="myform" method="post" id="myform">
+        <table class="table table-hover table-striped table-bordered wst-form">
+           <tr>
+             <th align='right' width="80">昵称 <font color='red'>*</font>：</th>
+             <td>
+             <input type='text' id='userName' name='userName' value="{$user['userName']}"/>
+             </td>
+             <td width='120' align='right' rowspan='5'>
+             <img id='preview' src='<if condition="$user['userPhoto'] =='' ">__ROOT__/Apps/Home/View/default/images/logo.png<else/>__ROOT__/{$user.userPhoto}</if>' width='150' height='150' />
+             <input type='text' id='userImgUpload' class="form-control wst-ipt"/>
+             <input type='hidden' id='userPhoto' name='userPhoto'/>
+             </td>
+           </tr>
+           <tr>
+             <th align='right'>性别 <font color='red'>*</font>：</th>
+             <td>
+             	<label><input type='radio' name='userSex' value="1" <if condition="$user['userSex'] eq 1">checked</if>/>男</label>
+             	<label><input type='radio' name='userSex' value="2" <if condition="$user['userSex'] eq 2">checked</if>/>女</label>
+             	<label><input type='radio' name='userSex' value="3" <if condition="$user['userSex'] eq 3">checked</if>/>保密</label>
+             </td>
+           </tr>
+            <tr>
+             <th align='right'>用户QQ ：</th>
+             <td>
+             <input type='text' id='userQQ' name='userQQ' value="{$user['userQQ']}"/>
+             </td>
+           </tr>
+           <tr>
+             <th align='right'>手机 <font color='red'>*</font>：</th>
+             <td>
+             <input type='text' id='userPhone' name='userPhone' value="{$user['userPhone']}" maxlength="11"/>
+             </td>
+           </tr>
+           <tr>
+             <th align='right'>邮箱<font color='red'>*</font>：</th>
+             <td>
+             <input type='text' id='userEmail' name='userEmail' value="{$user['userEmail']}" maxlength="25" style='width:200px'/>
+             </td>
+           </tr>
+           
+           <tr>
+             <td colspan='2' style='padding-left:250px;'>
+                 <button class='wst-btn-query' type="submit">保&nbsp;存</button>
+                 <button class='wst-btn-query' type="reset">重&nbsp;置</button>
+             </td>
+           </tr>
+        </table>
+       </form>
+       </div>
+   </div>
+</block>  

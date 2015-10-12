@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+   <head>
+      <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <title>后台管理中心</title>
+      <link href="__PUBLIC__/plugins/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+   
+      <!--[if lt IE 9]>
+      <script src="__PUBLIC__/js/html5shiv.min.js"></script>
+      <script src="__PUBLIC__/js/respond.min.js"></script>
+      <![endif]-->
+      <script src="__PUBLIC__/js/jquery.min.js"></script>
+      <script src="__PUBLIC__/plugins/bootstrap/js/bootstrap.min.js"></script>
+      <script src="__PUBLIC__/js/common.js"></script>
+      <script src="__PUBLIC__/plugins/plugins/plugins.js"></script>
+   </head>
+<body class='wst-page' style='overflow:scroll;overflow-x:hidden;overflow-y:'>
+<blockquote>
+  <p>审核认证</p>
+</blockquote>
+<div class="" style='margin: 10px;'>
+<table class="table table-hover">
+      <thead>
+        <tr>
+          <th>用户名</th>
+          <th>昵称</th>
+          <th>姓名</th>
+          <th>身份证号码</th>
+          <th>申请时间</th>
+          <th>认证状态</th>
+          <th>操作</th>
+        </tr>
+      </thead>
+      <tbody>
+     <volist name="info" id="vo">
+     	<tr>
+     	<td>{$vo.loginName}</td>
+     	<td>{$vo.userName}</td>
+     	<td>{$vo.u_name}</td>
+     	<td>{$vo.sfzhm}</td>
+     	<td>{$vo.add_time}</td>
+     	<td>    	
+     		<if condition="$vo.status eq 1"><font color='blue'>已审核</font>
+     			<elseif condition="$vo.status eq 2" /><font color='red'>被打回</font>
+     			<else/><font color='red'>未审核{$vo.['status']}</font>
+     		</if>
+     	</td>
+     	<td><a href="{:U('admin/yfq/get_verifyinfo',array('id'=>$vo['u_id']),'')}" id="check_info" data_id='{$vo.u_id}'>查看</a></td>
+     	</tr>   	
+		</volist>
+      </tbody>
+    </table>
+</div>
+<script type="text/javascript">
+
+	
+</script>
+</body>
+</html>

@@ -1,0 +1,216 @@
+<extend name="./Apps/Home/View/default/users/layout.html" />
+<block name="content">
+<script>
+$(function () {	   
+	   $("#userImgUpload").uploadify({
+			    formData      : {'dir':'users','width':150,'height':150},
+			    buttonText    : '选择图片',
+			    fileTypeDesc  : 'Image Files',
+		        fileTypeExts  : '*.gif; *.jpg; *.png',
+		        swf           : publicurl+'/plugins/uploadify/uploadify.swf',
+		        uploader      : Think.U('Home/Users/uploadPic'),
+		        onUploadSuccess : function(file, data, response) {
+		        	var json = WST.toJson(data);
+		        	$('#preview').attr('src',domainURL +'/'+json.Filedata.savepath+json.Filedata.savethumbname).show();
+		        	$('#userPhoto').val(json.Filedata.savepath+json.Filedata.savename);
+	       }
+		    });
+		   $("#userImgUpload02").uploadify({
+			    formData      : {'dir':'users','width':150,'height':150},
+			    buttonText    : '选择图片',
+			    fileTypeDesc  : 'Image Files',
+		        fileTypeExts  : '*.gif; *.jpg; *.png',
+		        swf           : publicurl+'/plugins/uploadify/uploadify.swf',
+		        uploader      : Think.U('Home/Users/uploadPic'),
+		        onUploadSuccess : function(file, data, response) {
+		        	var json = WST.toJson(data);
+		        	$('#preview02').attr('src',domainURL +'/'+json.Filedata.savepath+json.Filedata.savethumbname).show();
+		        	$('#userPhoto02').val(json.Filedata.savepath+json.Filedata.savename);
+	       }
+		    });
+		   $("#userImgUpload01").uploadify({
+			    formData      : {'dir':'users','width':150,'height':150},
+			    buttonText    : '选择图片',
+			    fileTypeDesc  : 'Image Files',
+		        fileTypeExts  : '*.gif; *.jpg; *.png',
+		        swf           : publicurl+'/plugins/uploadify/uploadify.swf',
+		        uploader      : Think.U('Home/Users/uploadPic'),
+		        onUploadSuccess : function(file, data, response) {
+		        	var json = WST.toJson(data);
+		        	$('#preview01').attr('src',domainURL +'/'+json.Filedata.savepath+json.Filedata.savethumbname).show();
+		        	$('#userPhoto01').val(json.Filedata.savepath+json.Filedata.savename);
+	       }
+		});
+});
+function User_verify(){	
+	 //  var params = {};
+	 //  params.u_name = $.trim($('#u_name').val());
+	 //  params.u_number = $.trim($('#u_number').val());
+	  // params.u_school = $.trim($('#u_school').val());
+	  // params.u_school_dz = $.trim($('#u_school_dz').val());
+	  // params.u_zy = $.trim($('#u_zy').val());
+	  // params.u_bj = $.trim($('#u_bj').val());
+	  // params.u_time = $.trim($('#u_time').val());
+	   //params.u_xz = $.trim($('#u_xz').val());
+	   //params.u_time = $.trim($('#u_time').val());
+	   //params.u_time = $.trim($('#u_time').val());
+	   //params.userSex = $('input:radio[name="userSex"]:checked').val();
+	   //params.userPhoto =  $.trim($('#userPhoto').val());		
+	   var ll = layer.load('数据处理中，请稍候...');
+	   $.post("{:U('home/users/add_users_info')}", $('#uverify_form').serialize(), function(data) {
+			if(data =='success'){
+				alert("提交成功！");
+				location.href ='{:U("home/users/user_verify")}'; 
+			}else{
+				alert('抱歉，系统错误！请重新操作。');
+			}
+				
+		});
+	   
+}
+
+</script>
+	<link rel="stylesheet" href="__PUBLIC__/plugins/uploadify/uploadify.css">
+	<script src="__PUBLIC__/plugins/uploadify/jquery.uploadify.min.js"></script>
+   	<div class="wst-body"> 
+       <div class='wst-page-header'>买家中心 > 申请认证</div>
+       <div class='wst-page-content'>
+       <h3>温馨提示：带*号的必填，否则无法认证通过！</h3>
+       <br>
+       <h2 style='margin-left: 20%;'>
+       <if condition="empty($r) eq true">你还没有提交认证信息，请提交认证信息！<elseif condition="$r['status'] eq 0"/>请等待管理员审核！
+       <elseif condition="$r['status'] eq 2"/>被打回：<font color='red' font-size='inherit'>{$r.back_info}</font>
+       <else/><font color='green' font-size='inherit'>恭喜，认证通过，立即分期！</font></if>
+       </h2>
+       <form name="uverify_form" method="post" id="uverify_form">
+       <input type="hidden" value="{$uid}" name="u_id">
+        <table class="table table-hover table-striped table-bordered wst-form">
+           <tr>
+             <th align='right' width="">真实姓名 <font color='red'>*</font>：</th>
+             <td>
+             <input type='text' id='u_name' name='u_name' value="{$r.u_name}"/>
+             </td>
+          <th align='right' width="">身份证号码 <font color='red'>*</font>：</th>
+             <td>
+             <input type='text' id='sfzhm' name='sfzhm' value="{$r.sfzhm}"/>
+             </td>
+           </tr>
+            <!--  
+           <tr>
+             <th align='right'>性别 <font color='red'>*</font>：</th>
+             <td>
+             	<label><input type='radio' name='u_sex' value="1" checked>男</label>
+             	<label><input type='radio' name='u_sex' value="2" >女</label>
+             	
+             </td>
+             <th align='right' width="">年龄 <font color='red'>*</font>：</th>
+             <td>
+             <input type='text' id='u_year' name='u_year' value=""/>
+             </td>
+           </tr>
+          
+            <tr>
+             <th align='right'>手机号码 <font color='red'>*</font>：</th>
+             <td>
+             <input type='text' id='u_phone' name='u_phone' value=""/>
+             </td>
+             <th align='right'>QQ  <font color='red'>*</font>：</th>
+             <td>
+             <input type='text' id='u_qq' name='u_qq' value=""/>
+             </td>
+           </tr>
+           -->
+          <tr>
+             <th align='right'>学校名称 <font color='red'>*</font>：</th>
+             <td>
+             <input type='text' id='sch_name' name='sch_name' value="{$r.sch_name}"/>
+             </td>
+             <th align='right'>学校地址<font color='red'>*</font>：</th>
+             <td>
+             <input type='text' id='sch_address' name='sch_address' value="{$r.sch_address}"/>
+             </td>
+           </tr>
+           
+           <tr>
+             <th align='right'>所学专业<font color='red'>*</font>：</th>
+             <td>
+             <input type='text' id='profession' name='profession' value="{$r.profession}"/>
+             </td>
+             <th align='right'>班级<font color='red'>*</font>：</th>
+             <td>
+             <input type='text' id='class' name='class' value="{$r.class}"/>
+             </td>
+           </tr>
+           
+             <tr>
+             <th align='right'>入学时间<font color='red'>*</font>：</th>
+             <td>
+             <input type="date" id='start_time' name='start_time' value="{$r.start_time}" />
+             </td>
+             <th align='right'>学制<font color='red'>*</font>：</th>
+             <td>
+             <input type='text' id='xuezhi' name='xuezhi' value="{$r.xuezhi}"/>
+             </td>
+           </tr>
+           
+           <tr>
+             <th align='right'>寝室地址<font color='red'>*</font>：</th>
+             <td>
+             <input type='text' id='dorm_address' name='dorm_address' value="{$r.dorm_address}"/>
+             </td>
+             <th align='right'>寝室号<font color='red'>*</font>：</th>
+             <td>
+             <input type='text' id='dorm_number' name='dorm_number' value="{$r.dorm_number}"/>
+             </td>
+           </tr>
+           <tr>
+             <th align='right'>手持学生证首页照：<font color='red'>*</font>：</th>
+             <td>
+           <img id='preview' src='<if condition="$r['student_img'] =='' ">__ROOT__/Apps/Home/View/default/images/logo.png<else/>__ROOT__/{$r.student_img}</if>' width='200px' height='146px' />
+              <if condition='$r.status neq 1'>
+             <input type='text' id='userImgUpload' class="form-control wst-ipt"/>
+             </if>
+             <input type='hidden' id='userPhoto' name='student_img' value="{$r['student_img']}"/>
+             <div style="height: 10px;"></div>
+             </td>
+           
+           </tr>
+           
+            <tr>
+             <th align='right'>手持身份证正面照：<font color='red'>*</font>：</th>
+             <td>
+            <img id='preview01' src='<if condition="$r['sfz_img01'] =='' ">__ROOT__/Apps/Home/View/default/images/logo.png<else/>__ROOT__/{$r.sfz_img01}</if>'width='200px' height='146px' />
+             <if condition='$r.status neq 1'>
+             <input type='text' id='userImgUpload01' class="form-control wst-ipt"/>
+             </if>
+             <input type='hidden' id='userPhoto01' name='sfz_img01' value='{$r['sfz_img01']}'/>
+              <div style="height: 10px;"></div>
+             </td>
+           
+           </tr>
+           
+            <tr>
+             <th align='right'>手持身份证背面照：<font color='red'>*</font>：</th>
+             <td>
+            <img id='preview02' src='<if condition="$r['sfz_img02'] =='' ">__ROOT__/Apps/Home/View/default/images/logo.png<else/>__ROOT__/{$r.sfz_img02}</if>' width='200px' height='146px' />
+             <if condition='$r.status neq 1'>
+             <input type='text' id='userImgUpload02' class="form-control wst-ipt"/>
+             </if>
+             <input type='hidden' id='userPhoto02' name='sfz_img02' value="{$r['sfz_img02']}"/>
+             </td>
+           
+           </tr>
+     <if condition='$r.status neq 1'>
+           <tr>
+             <td colspan='2' style='padding-left:250px;'>
+                 <button class='wst-btn-query' type="button" id="sub" onclick='User_verify()'>保&nbsp;存</button>
+                 <button class='wst-btn-query' type="reset">重&nbsp;置</button>
+             </td>
+           </tr>
+       </if>
+        </table>
+       </form>
+
+       </div>
+   </div>
+</block>  

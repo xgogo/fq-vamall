@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+   <head>
+      <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <title>{$CONF['mallTitle']}后台管理中心</title>
+      <link href="__PUBLIC__/plugins/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+      <link href="__ROOT__/Apps/Admin/View/css/AdminLTE.css" rel="stylesheet" type="text/css" />
+      <link rel="stylesheet" href="__PUBLIC__/plugins/uploadify/uploadify.css">
+      <!--[if lt IE 9]>
+      <script src="__PUBLIC__/js/html5shiv.min.js"></script>
+      <script src="__PUBLIC__/js/respond.min.js"></script>
+      <![endif]-->
+      <script src="__PUBLIC__/js/jquery.min.js"></script>
+      <script src="__PUBLIC__/plugins/bootstrap/js/bootstrap.min.js"></script>
+      <script src="__PUBLIC__/js/common.js"></script>
+      <script src="__PUBLIC__/plugins/plugins/plugins.js"></script>
+      <script src="__PUBLIC__/plugins/uploadify/jquery.uploadify.min.js"></script>
+      <script>
+      $(function(){
+    	  $('#myTab a').click(function (e) {
+    		  e.preventDefault();
+    		  $(this).tab('show');
+    	  });
+    	  <PHP>if($CONF['mallLicense']==''){</PHP>
+    	  //$('#mallCopyright').attr('disabled',true);
+    	  <PHP>}</PHP>
+    	  <php>
+  		  foreach($configs as $key =>$cf){
+  		  foreach($cf as $key =>$vo){
+  			if($vo['fieldType']=='upload'){
+  		  </php>
+    	  $("#{$vo["fieldCode"]}Upload").uploadify({
+  		    formData      : {'dir':'mall','width':240,'height':132},
+  		    buttonText    : '选择图标',
+  		    fileTypeDesc  : 'Image Files',
+  	        fileTypeExts  : '*.gif; *.jpg; *.png',
+  	        swf           : '__PUBLIC__/plugins/uploadify/uploadify.swf',
+  	        uploader      : '{:U("Admin/Index/uploadPic")}',
+  	        onUploadSuccess : function(file, data, response) {
+  	        	var json = WST.toJson(data);
+  	        	var url = '__ROOT__/'+json.Filedata.savepath+json.Filedata.savethumbname;
+  	        	$('#{$vo["fieldCode"]}').val(json.Filedata.savepath+json.Filedata.savename);
+  	        	$('#{$vo["fieldCode"]}Preview').attr('src',url);
+              }
+  	      });
+    	  <php>}}}</php>
+      })
+      function save(){
+    		var params = {};
+    		<php>
+    		foreach($configs as $key =>$cf){
+    		foreach($cf as $key =>$vo){
+    			if($vo['fieldType']=='radio'){
+    	    </php>
+    			params.{$vo['fieldCode']} = $("input:radio[name='{$vo['fieldCode']}']:checked").val();
+    		<php>}else{</php>
+    			params.{$vo['fieldCode']} = $('#{$vo['fieldCode']}').val();
+    		<php>}}}</php>
+    		Plugins.waitTips({title:'信息提示',content:'正在提交数据，请稍后...'});
+    		$.post("{:U('Admin/index/saveMallConfig')}",params,function(data,textStatus){
+    			var json = WST.toJson(data);
+    			if(json.status=='1'){
+    				Plugins.setWaitTipsMsg({content:'操作成功',timeout:1000,callback:function(){}});
+    			}else{
+    				Plugins.closeWindow();
+    				Plugins.Tips({title:'信息提示',icon:'error',content:'操作失败!',timeout:1000});
+    			}
+    		});
+    	}
+      </script>
+   </head>
+   <body>
+      <ul id="myTab" class="nav nav-tabs wst-tab" role="tablist">
+	      <li class="active"><a href="#tabc0" role="tab" data-toggle="tab">商城设置</a></li>
+	      <li><a href="#tabc1" role="tab" data-toggle="tab">邮件设置</a></li>
+	      <li><a href="#tabc2" role="tab" data-toggle="tab">短信设置</a></li>
+	  </ul>
+      <div class='tab-content wst-tab-content'>
+          <foreach name="configs"  item="vo" key="k">
+          <div class='tab-pane <if condition="$k eq 0">active in</if> fade wst-tab-pane' id='tabc{$k}'>
+            <form class="form-horizontal" role="form">
+               <table class='table table-hover table-striped table-bordered wst-form'>
+               <foreach name="vo"  item="v" key="key">
+               <tr>
+                  <th width='150'>{$v['fieldName']}：</th>
+                  <td>
+                     <php>
+                     if($v['fieldType']=='text'){
+                     </php>
+                     <input type='text' class="form-control wst-ipt" id='{$v["fieldCode"]}' name='{$v["code"]}' value="{$v['fieldValue']}" />{$v['fieldTips']}
+                     <php>
+                     }else if($v['fieldType']=='radio'){
+                        foreach($v['txt'] as $kt => $vt){
+                     </php>
+                       <label>
+			           <input type='radio' id='{$v["val"][$kt]}_{$kt}' name='{$v["fieldCode"]}' value='{$v["val"][$kt]}' size='30' <php>if($v["fieldValue"]==$v["val"][$kt]){ echo "checked";}</php> />{$vt}&nbsp;&nbsp;
+			           </label>
+			         <php>
+			            }
+			         </php>{$v['fieldTips']}
+                     <php>}else if($v['fieldType']=='textarea'){</php>
+                     <textarea id='{$v["fieldCode"]}' name='{$vo["fieldCode"]}' style='width:400px;height:100px;'>{$v['fieldValue']}</textarea>{$v['fieldTips']}
+                     <php>}else if($v['fieldType']=='upload'){</php>
+                     <input type='text' id='{$v["fieldCode"]}Upload' class="form-control wst-ipt"/>{$v['fieldTips']}
+                     <input type='hidden' id='{$v["fieldCode"]}' value='{$v['fieldValue']}'/>
+                     <img id='{$v["fieldCode"]}Preview' src='__ROOT__/{$v['fieldValue']}'/>
+                     <php>}</php>
+                  </td>
+               </tr>
+               </foreach>
+               <tr>
+                 <td style='padding-left:250px;' colspan='2'>
+                    <button type="button" class="btn btn-primary" onclick='javascript:save()'>保&nbsp;存</button>
+                    <button type="reset" class="btn btn-primary">重&nbsp;置</button>
+                 </td>
+               </tr>
+               </table>
+             </form>  
+          </div>
+          </foreach>
+      </div>
+   </body>
+</html> 
