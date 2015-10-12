@@ -24,3 +24,9 @@ WSTMall客服电话：020-29806661
 WSTMall邮箱 wasonteam@163.com
 WSTMall官网：http://www.wstmall.com
 百度贴吧：http://tieba.baidu.com/wstmall
+
+
+sql说明：
+user_info  用户信息
+role       规则设置
+fenqi      分期信息
